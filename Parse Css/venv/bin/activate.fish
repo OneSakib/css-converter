@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/wis-24/Desktop/data/Parse Css/venv"
+set -gx VIRTUAL_ENV "/home/wis-24/Desktop/data/css-converter/Parse Css/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

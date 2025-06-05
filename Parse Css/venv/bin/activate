@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/wis-24/Desktop/data/Parse Css/venv"
+VIRTUAL_ENV="/home/wis-24/Desktop/data/css-converter/Parse Css/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

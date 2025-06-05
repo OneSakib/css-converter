@@ -29,30 +29,31 @@ def extract_px_css_blocks(css_text):
 
         converted_declarations = []
         for decl in declarations:
-            if "px" in decl:
-                prop, val = decl.strip().split(":", 1)
-                px_values = re.findall(r'(\d+(\.\d+)?)px', val)
-                if px_values:
-                    for px_val, _ in px_values:
-                        val = val.replace(f"{px_val}px", px_to_vw(px_val))
-                    converted_declarations.append(
-                        f"  {prop.strip()}: {val.strip()};")
-            elif "rem" in decl:
-                prop, val = decl.strip().split(":", 1)
-                px_values = re.findall(r'(\d+(\.\d+)?)rem', val)
-                if px_values:
-                    for px_val, _ in px_values:
-                        val = val.replace(f"{px_val}rem", rem_to_vw(px_val))
-                    converted_declarations.append(
-                        f"  {prop.strip()}: {val.strip()};")
-            elif "em" in decl:
-                prop, val = decl.strip().split(":", 1)
-                px_values = re.findall(r'(\d+(\.\d+)?)em', val)
-                if px_values:
-                    for px_val, _ in px_values:
-                        val = val.replace(f"{px_val}em", rem_to_vw(px_val))
-                    converted_declarations.append(
-                        f"  {prop.strip()}: {val.strip()};")
+            decl = decl.strip()
+            if not decl or ":" not in decl:
+                continue  # skip empty or invalid            
+            prop, val = decl.split(":", 1)
+            prop = prop.strip()
+            prop=prop.replace('*/','')
+            prop=prop.replace('/*','')
+            val = val.strip()
+            if bool(re.search(r'\b\d+(\.\d+)?px\b', val)):
+                px_values = re.findall(r'(\d+(\.\d+)?|\d+)px', val)
+                for px_val, _ in px_values:
+                    val = val.replace(f"{px_val}px", px_to_vw(px_val))                                
+                converted_declarations.append(f"  {prop}: {val};")
+
+            elif bool(re.search(r'\b\d+(\.\d+)?rem\b', val)):
+                rem_values = re.findall(r'(\d+(\.\d+)?)rem', val)
+                for rem_val, _ in rem_values:
+                    val = val.replace(f"{rem_val}rem", rem_to_vw(rem_val))
+                converted_declarations.append(f"  {prop}: {val};")
+
+            elif bool(re.search(r'\b\d+(\.\d+)?em\b', val)):
+                em_values = re.findall(r'(\d+(\.\d+)?)em', val)
+                for em_val, _ in em_values:
+                    val = val.replace(f"{em_val}em", rem_to_vw(em_val))  # treat same as rem
+                converted_declarations.append(f"  {prop}: {val};")
 
         if converted_declarations:
             result.append(

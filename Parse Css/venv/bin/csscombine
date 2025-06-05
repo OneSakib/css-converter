@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/home/wis-24/Desktop/data/Parse Css/venv/bin/python3" "$0" "$@"
+'''exec' "/home/wis-24/Desktop/data/css-converter/Parse Css/venv/bin/python3" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
