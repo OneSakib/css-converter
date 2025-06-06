@@ -1,46 +1,80 @@
-import { Monitor } from "lucide-react"
+import { Zap } from "lucide-react"
+import Link from "next/link"
 export default function Footer() {
     return (
-        <footer className="bg-gray-900 text-white py-8 mt-12">
-            <div className="container mx-auto px-4">
-                <div className="grid md:grid-cols-3 gap-8">
-                    <div>
-                        <div className="flex items-center space-x-3 mb-4">
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                                <Monitor className="w-5 h-5 text-white" />
+        <footer className="border-t bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm py-12 px-4">
+            <div className="container mx-auto max-w-6xl">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div className="col-span-1 md:col-span-2">
+                        <div className="flex items-center space-x-2 mb-4">
+                            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-2 rounded-lg">
+                                <Zap className="h-5 w-5 text-white" />
                             </div>
-                            <h3 className="text-xl font-bold">PX to VW Converter</h3>
+                            <span className="text-lg font-bold">DevTools Hub</span>
                         </div>
-                        <p className="text-gray-400 text-sm">
-                            A simple and efficient tool for converting pixel values to viewport width units for responsive web
-                            design.
+                        <p className="text-muted-foreground mb-4 max-w-md">
+                            Your go-to collection of essential web development tools. Format, convert, and optimize your code with
+                            ease.
                         </p>
                     </div>
 
                     <div>
-                        <h4 className="font-semibold mb-4">Features</h4>
-                        <ul className="space-y-2 text-sm text-gray-400">
-                            <li>• Real-time conversion</li>
-                            <li>• Preset screen sizes</li>
-                            <li>• Copy to clipboard</li>
-                            <li>• Mobile responsive</li>
+                        <h4 className="font-semibold mb-4">Tools</h4>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li>
+                                <Link href="/tools/css-formatter" className="hover:text-foreground">
+                                    CSS Formatter
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/json-formatter" className="hover:text-foreground">
+                                    JSON Formatter
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/js-formatter" className="hover:text-foreground">
+                                    JS Formatter
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/tools/px-to-rem" className="hover:text-foreground">
+                                    Unit Converters
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 className="font-semibold mb-4">About VW Units</h4>
-                        <p className="text-sm text-gray-400">
-                            Viewport Width (vw) is a CSS unit where 1vw equals 1% of the viewport width. It&apos;s perfect for creating
-                            responsive designs that scale with screen size.
-                        </p>
+                        <h4 className="font-semibold mb-4">Support</h4>
+                        <ul className="space-y-2 text-sm text-muted-foreground">
+                            <li>
+                                <Link href="/about" className="hover:text-foreground">
+                                    About
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/contact" className="hover:text-foreground">
+                                    Contact
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/privacy" className="hover:text-foreground">
+                                    Privacy
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/terms" className="hover:text-foreground">
+                                    Terms
+                                </Link>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
-                <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-                    <p className="text-sm text-gray-400">© 2024 PX to VW Converter. Built for responsive web design.</p>
+                <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
+                    <p>&copy; {new Date().getFullYear()} DevTools Hub. All rights reserved.</p>
                 </div>
             </div>
         </footer>
-
     )
 }
