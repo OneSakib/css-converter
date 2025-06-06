@@ -1,18 +1,23 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Copy, Monitor, Smartphone, Tablet } from "lucide-react"
+import Toast, { ToastHandle } from "@/components/Toast"
+
 
 export default function Home() {
   const [pxValue, setPxValue] = useState<string>("")
   const [screenSize, setScreenSize] = useState<string>("")
   const [vwResult, setVwResult] = useState<string>("")
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState("")
+  const toastRef = useRef<ToastHandle>(null);
+
+  const showToastMessage = (message: string) => {
+    toastRef.current?.showToastMessage(message);
+  };
 
   // Get browser screen size on component mount
   useEffect(() => {
@@ -37,11 +42,7 @@ export default function Home() {
     }
   }, [pxValue, screenSize])
 
-  const showToastMessage = (message: string) => {
-    setToastMessage(message)
-    setShowToast(true)
-    setTimeout(() => setShowToast(false), 3000)
-  }
+
 
   const copyToClipboard = async () => {
     if (vwResult) {
@@ -62,26 +63,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                <Monitor className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">PX to VW Converter</h1>
-                <p className="text-sm text-gray-600">Convert pixels to viewport width units</p>
-              </div>
-            </div>
-            <div className="hidden md:flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Responsive Design Tool</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
@@ -235,60 +216,8 @@ export default function Home() {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                  <Monitor className="w-5 h-5 text-white" />
-                </div>
-                <h3 className="text-xl font-bold">PX to VW Converter</h3>
-              </div>
-              <p className="text-gray-400 text-sm">
-                A simple and efficient tool for converting pixel values to viewport width units for responsive web
-                design.
-              </p>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">Features</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>• Real-time conversion</li>
-                <li>• Preset screen sizes</li>
-                <li>• Copy to clipboard</li>
-                <li>• Mobile responsive</li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4">About VW Units</h4>
-              <p className="text-sm text-gray-400">
-                Viewport Width (vw) is a CSS unit where 1vw equals 1% of the viewport width. It&apos;s perfect for creating
-                responsive designs that scale with screen size.
-              </p>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-            <p className="text-sm text-gray-400">© 2024 PX to VW Converter. Built for responsive web design.</p>
-          </div>
-        </div>
-      </footer>
-
       {/* Animated Toast */}
-      {showToast && (
-        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right duration-300">
-          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2">
-            <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            </div>
-            <span className="font-medium">{toastMessage}</span>
-          </div>
-        </div>
-      )}
+      <Toast ref={toastRef} />
     </div>
   )
 }
