@@ -35,7 +35,7 @@ export default function Header() {
 
                     <div className="flex items-center space-x-4">
                         <Button variant="ghost" size="sm" asChild>
-                            <Link href="https://github.com" className="flex items-center space-x-2">
+                            <Link href="https://github.com/onesakib" className="flex items-center space-x-2">
                                 <Github className="h-4 w-4" />
                                 <span className="hidden sm:inline">GitHub</span>
                             </Link>
