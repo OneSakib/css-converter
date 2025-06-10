@@ -1,4 +1,3 @@
-// components/Toast.tsx
 'use client'
 
 import React, { useState, useImperativeHandle, forwardRef } from 'react'
