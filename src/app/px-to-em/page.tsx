@@ -1,237 +1,217 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Copy, ArrowRightLeft, Info } from "lucide-react"
-import Toast, { ToastHandle } from "@/components/Toast"
+import { Copy, Monitor, Smartphone, Tablet } from "lucide-react"
+import { toast } from "@/lib/toast"
 
-export default function PxEMConverter() {
-    const [pxValue, setPxValue] = useState<string>("16")
-    const [viewportWidth, setViewportWidth] = useState<string>("1920")
-    const [vwValue, setVwValue] = useState<string>("0.83")
-    const [vwInput, setVwInput] = useState<string>("5")
-    const [pxFromVw, setPxFromVw] = useState<string>("96")
-    const toastRef = useRef<ToastHandle>(null);
-    const showToastMessage = (message: string) => {
-        toastRef.current?.showToastMessage(message);
-    };
 
-    // Convert PX to VW
+export default function PXToVW() {
+    const [pxValue, setPxValue] = useState<string>("")
+    const [screenSize, setScreenSize] = useState<string>("")
+    const [vwResult, setVwResult] = useState<string>("")
+
+
+    // Get browser screen size on component mount
     useEffect(() => {
-        const px = Number.parseFloat(pxValue)
-        const viewport = Number.parseFloat(viewportWidth)
-
-        if (!isNaN(px) && !isNaN(viewport) && viewport > 0) {
-            const vw = (px / viewport) * 100
-            setVwValue(vw.toFixed(4))
-        } else {
-            setVwValue("0")
+        if (typeof window !== "undefined") {
+            setScreenSize(window.innerWidth.toString())
         }
-    }, [pxValue, viewportWidth])
+    }, [])
 
-    // Convert VW to PX
+    // Calculate VW whenever px or screen size changes
     useEffect(() => {
-        const vw = Number.parseFloat(vwInput)
-        const viewport = Number.parseFloat(viewportWidth)
-
-        if (!isNaN(vw) && !isNaN(viewport) && viewport > 0) {
-            const px = (vw * viewport) / 100
-            setPxFromVw(px.toFixed(2))
+        if (pxValue && screenSize) {
+            const px = Number.parseFloat(pxValue)
+            const screen = Number.parseFloat(screenSize)
+            if (!isNaN(px) && !isNaN(screen) && screen > 0) {
+                const vw = (px / screen) * 100
+                setVwResult(vw.toFixed(4))
+            } else {
+                setVwResult("")
+            }
         } else {
-            setPxFromVw("0")
+            setVwResult("")
         }
-    }, [vwInput, viewportWidth])
+    }, [pxValue, screenSize])
 
-    const copyToClipboard = (value: string, unit: string) => {
-        navigator.clipboard.writeText(`${value}${unit}`)
-        showToastMessage(`${value}${unit} copied to clipboard`)
+
+
+    const copyToClipboard = async () => {
+        if (vwResult) {
+            try {
+                await navigator.clipboard.writeText(`${vwResult}vw`)
+                toast({ title: "Copied", description: "VW value copied to clipboard!", variant: "success" })
+            } catch (err) {
+                console.log("Failed to copy: ", err)
+                toast({ title: "Copied", description: "Failed to copy!", variant: "error" })
+            }
+        }
     }
 
-    const setCommonViewport = (width: number) => {
-        setViewportWidth(width.toString())
+    const setPresetScreenSize = (size: number) => {
+        setScreenSize(size.toString())
+        toast({ title: "Copied", description: `Screen size set to ${size}px`, variant: "success" })
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-            <div className="max-w-4xl mx-auto space-y-8">
-                {/* Header */}
-                <div className="text-center space-y-4 pt-8">
-                    <h1 className="text-4xl font-bold text-gray-900">PX to VW Converter</h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Convert pixels to viewport width units and vice versa. Perfect for responsive web design.
-                    </p>
-                </div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+            {/* Main Content */}
+            <main className="container mx-auto px-4 py-8">
+                <div className="max-w-4xl mx-auto">
+                    {/* Hero Section */}
+                    <div className="text-center mb-8">
+                        <h2 className="text-4xl font-bold text-gray-900 mb-4">Convert Pixels to Viewport Width</h2>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Easily convert pixel values to viewport width (vw) units for responsive web design. Perfect for creating
+                            fluid layouts that scale with screen size.
+                        </p>
+                    </div>
 
-                {/* Main Converter Cards */}
-                <div className="grid md:grid-cols-2 gap-6">
-                    {/* PX to VW Converter */}
-                    <Card className="shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <ArrowRightLeft className="w-5 h-5" />
-                                PX to VW
-                            </CardTitle>
-                            <CardDescription>Convert pixel values to viewport width units</CardDescription>
+                    {/* Converter Card */}
+                    <Card className="mb-8 shadow-lg border-0">
+                        <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+                            <CardTitle className="text-2xl font-semibold text-center">PX to VW Converter</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="px-input">Pixel Value (px)</Label>
-                                <Input
-                                    id="px-input"
-                                    type="number"
-                                    value={pxValue}
-                                    onChange={(e) => setPxValue(e.target.value)}
-                                    placeholder="Enter pixel value"
-                                />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="viewport-width">Viewport Width (px)</Label>
-                                <Input
-                                    id="viewport-width"
-                                    type="number"
-                                    value={viewportWidth}
-                                    onChange={(e) => setViewportWidth(e.target.value)}
-                                    placeholder="Enter viewport width"
-                                />
-                            </div>
-
-                            <div className="flex gap-2 flex-wrap">
-                                <Button variant="outline" size="sm" onClick={() => setCommonViewport(320)}>
-                                    Mobile (320px)
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => setCommonViewport(768)}>
-                                    Tablet (768px)
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => setCommonViewport(1920)}>
-                                    Desktop (1920px)
-                                </Button>
-                            </div>
-
-                            <Separator />
-
-                            <div className="bg-green-50 p-4 rounded-lg">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-600">Result:</p>
-                                        <p className="text-2xl font-bold text-green-700">{vwValue}vw</p>
+                        <CardContent className="p-8">
+                            <div className="grid md:grid-cols-2 gap-8">
+                                {/* Input Section */}
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="px-input" className="text-lg font-medium text-gray-700">
+                                            Pixel Value (px)
+                                        </Label>
+                                        <Input
+                                            id="px-input"
+                                            type="number"
+                                            placeholder="Enter pixel value"
+                                            value={pxValue}
+                                            onChange={(e) => setPxValue(e.target.value)}
+                                            className="text-lg p-4 border-2 border-gray-200 focus:border-blue-500 rounded-lg"
+                                        />
                                     </div>
-                                    <Button variant="outline" size="sm" onClick={() => copyToClipboard(vwValue, "vw")}>
-                                        <Copy className="w-4 h-4" />
-                                    </Button>
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="screen-input" className="text-lg font-medium text-gray-700">
+                                            Screen Width (px)
+                                        </Label>
+                                        <Input
+                                            id="screen-input"
+                                            type="number"
+                                            placeholder="Enter screen width"
+                                            value={screenSize}
+                                            onChange={(e) => setScreenSize(e.target.value)}
+                                            className="text-lg p-4 border-2 border-gray-200 focus:border-blue-500 rounded-lg"
+                                        />
+
+                                        {/* Preset Screen Sizes */}
+                                        <div className="flex flex-wrap gap-2 mt-3">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setPresetScreenSize(320)}
+                                                className="flex items-center gap-1"
+                                            >
+                                                <Smartphone className="w-4 h-4" />
+                                                Mobile (320px)
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setPresetScreenSize(768)}
+                                                className="flex items-center gap-1"
+                                            >
+                                                <Tablet className="w-4 h-4" />
+                                                Tablet (768px)
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setPresetScreenSize(1920)}
+                                                className="flex items-center gap-1"
+                                            >
+                                                <Monitor className="w-4 h-4" />
+                                                Desktop (1920px)
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Result Section */}
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label className="text-lg font-medium text-gray-700">Viewport Width Result</Label>
+                                        <div className="relative">
+                                            <div className="text-4xl font-bold text-center p-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg">
+                                                {vwResult ? (
+                                                    <span className="text-green-600">{vwResult}vw</span>
+                                                ) : (
+                                                    <span className="text-gray-400">0.0000vw</span>
+                                                )}
+                                            </div>
+                                            {vwResult && (
+                                                <Button
+                                                    onClick={copyToClipboard}
+                                                    className="absolute top-2 right-2 p-2"
+                                                    size="sm"
+                                                    variant="ghost"
+                                                >
+                                                    <Copy className="w-4 h-4" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Formula Display */}
+                                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                        <h4 className="font-semibold text-blue-900 mb-2">Formula:</h4>
+                                        <code className="text-blue-800 text-sm">vw = (px ÷ screen_width) × 100</code>
+                                        {pxValue && screenSize && (
+                                            <div className="mt-2 text-sm text-blue-700">
+                                                <code>
+                                                    {vwResult}vw = ({pxValue} ÷ {screenSize}) × 100
+                                                </code>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* VW to PX Converter */}
-                    <Card className="shadow-lg">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <ArrowRightLeft className="w-5 h-5 rotate-180" />
-                                VW to PX
-                            </CardTitle>
-                            <CardDescription>Convert viewport width units to pixel values</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="vw-input">Viewport Width Value (vw)</Label>
-                                <Input
-                                    id="vw-input"
-                                    type="number"
-                                    step="0.01"
-                                    value={vwInput}
-                                    onChange={(e) => setVwInput(e.target.value)}
-                                    placeholder="Enter vw value"
-                                />
+                    {/* Info Cards */}
+                    <div className="grid md:grid-cols-3 gap-6 mb-8">
+                        <Card className="text-center p-6 border-0 shadow-md">
+                            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Monitor className="w-6 h-6 text-blue-600" />
                             </div>
+                            <h3 className="font-semibold text-gray-900 mb-2">Responsive Design</h3>
+                            <p className="text-sm text-gray-600">
+                                VW units scale with viewport width, making your designs truly responsive
+                            </p>
+                        </Card>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="viewport-width-2">Viewport Width (px)</Label>
-                                <Input
-                                    id="viewport-width-2"
-                                    type="number"
-                                    value={viewportWidth}
-                                    onChange={(e) => setViewportWidth(e.target.value)}
-                                    placeholder="Enter viewport width"
-                                />
+                        <Card className="text-center p-6 border-0 shadow-md">
+                            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Smartphone className="w-6 h-6 text-green-600" />
                             </div>
+                            <h3 className="font-semibold text-gray-900 mb-2">Mobile First</h3>
+                            <p className="text-sm text-gray-600">Perfect for mobile-first design approaches and fluid layouts</p>
+                        </Card>
 
-                            <div className="flex gap-2 flex-wrap">
-                                <Button variant="outline" size="sm" onClick={() => setCommonViewport(320)}>
-                                    Mobile (320px)
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => setCommonViewport(768)}>
-                                    Tablet (768px)
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => setCommonViewport(1920)}>
-                                    Desktop (1920px)
-                                </Button>
+                        <Card className="text-center p-6 border-0 shadow-md">
+                            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Copy className="w-6 h-6 text-purple-600" />
                             </div>
-
-                            <Separator />
-
-                            <div className="bg-blue-50 p-4 rounded-lg">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm text-gray-600">Result:</p>
-                                        <p className="text-2xl font-bold text-blue-700">{pxFromVw}px</p>
-                                    </div>
-                                    <Button variant="outline" size="sm" onClick={() => copyToClipboard(pxFromVw, "px")}>
-                                        <Copy className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
+                            <h3 className="font-semibold text-gray-900 mb-2">Easy Copy</h3>
+                            <p className="text-sm text-gray-600">Click to copy the converted VW value directly to your clipboard</p>
+                        </Card>
+                    </div>
                 </div>
-
-                {/* Information Card */}
-                <Card className="shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Info className="w-5 h-5" />
-                            About VW Units
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h3 className="font-semibold text-lg mb-2">What is VW?</h3>
-                                <p className="text-gray-600 text-sm leading-relaxed">
-                                    VW (Viewport Width) is a CSS unit that represents a percentage of the viewport&apos;s width. 1vw equals 1%
-                                    of the viewport width. This makes it perfect for creating responsive designs that scale with the
-                                    screen size.
-                                </p>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-lg mb-2">Conversion Formula</h3>
-                                <div className="bg-gray-100 p-3 rounded-lg font-mono text-sm">
-                                    <p>PX to VW: (px / viewport_width) × 100</p>
-                                    <p>VW to PX: (vw × viewport_width) / 100</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <Separator />
-
-                        <div>
-                            <h3 className="font-semibold text-lg mb-2">Common Use Cases</h3>
-                            <ul className="text-gray-600 text-sm space-y-1">
-                                <li>• Responsive typography that scales with screen size</li>
-                                <li>• Fluid layouts that adapt to different devices</li>
-                                <li>• Consistent spacing across various screen sizes</li>
-                                <li>• Creating scalable UI components</li>
-                            </ul>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-            <Toast ref={toastRef} />
+            </main>
         </div>
     )
 }

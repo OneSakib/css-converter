@@ -1,23 +1,19 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Copy, Monitor, Smartphone, Tablet } from "lucide-react"
-import Toast, { ToastHandle } from "@/components/Toast"
+import { toast } from "@/lib/toast"
 
 
 export default function PXToVW() {
     const [pxValue, setPxValue] = useState<string>("")
     const [screenSize, setScreenSize] = useState<string>("")
     const [vwResult, setVwResult] = useState<string>("")
-    const toastRef = useRef<ToastHandle>(null);
 
-    const showToastMessage = (message: string) => {
-        toastRef.current?.showToastMessage(message);
-    };
 
     // Get browser screen size on component mount
     useEffect(() => {
@@ -48,17 +44,17 @@ export default function PXToVW() {
         if (vwResult) {
             try {
                 await navigator.clipboard.writeText(`${vwResult}vw`)
-                showToastMessage("VW value copied to clipboard!")
+                toast({ title: "Copied", description: "VW value copied to clipboard!", variant: "success" })
             } catch (err) {
                 console.log("Failed to copy: ", err)
-                showToastMessage("Failed to copy to clipboard")
+                toast({ title: "Copied", description: "Failed to copy!", variant: "error" })
             }
         }
     }
 
     const setPresetScreenSize = (size: number) => {
         setScreenSize(size.toString())
-        showToastMessage(`Screen size set to ${size}px`)
+        toast({ title: "Copied", description: `Screen size set to ${size}px`, variant: "success" })
     }
 
     return (
@@ -216,8 +212,6 @@ export default function PXToVW() {
                     </div>
                 </div>
             </main>
-            {/* Animated Toast */}
-            <Toast ref={toastRef} />
         </div>
     )
 }
